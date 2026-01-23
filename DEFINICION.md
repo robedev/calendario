@@ -26,7 +26,8 @@ Aplicación web completa para visualizar y generar calendarios mensuales chileno
 ### 🎨 Generación de PDF Profesional
 - **Formato optimizado** para impresión (Carta 216mm x 279mm, vertical)
 - **Distribución inteligente por semanas**: 2 páginas principales + página de feriados
-- **Números grandes y legibles** (46pt) para accesibilidad
+- **Números grandes y legibles** (69pt) para accesibilidad
+- **Mini calendarios** de meses adyacentes en encabezados
 - **Encabezados prominentes** (16pt) con nombres completos de días
 - **Layout sin superposiciones** ni elementos que se tapen
 - **Títulos consistentes** entre páginas

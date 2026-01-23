@@ -7,7 +7,7 @@ Aplicación web que genera calendarios mensuales con formato chileno, incluyendo
 - Calendario mensual con formato chileno (lunes a domingo)
 - Feriados nacionales y regionales actualizados
 - Ley de Puente implementada
-- Generación de PDF para imprimir (formato carta, 2 páginas compactas con números de 46pt)
+- Generación de PDF para imprimir (formato carta, 2 páginas compactas con números de 69pt y mini calendarios)
 - Diseño responsivo y moderno
 - Selección de región para feriados regionales
 
