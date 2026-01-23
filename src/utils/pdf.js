@@ -62,13 +62,35 @@ function drawMesPage(doc, mes, año, semanas, feriados, lado, margin, contentWid
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(0, 0, 0)
 
+  // Calcular mes anterior y siguiente
+  let mesAnterior = mes - 1
+  let añoAnterior = año
+  if (mesAnterior < 0) {
+    mesAnterior = 11
+    añoAnterior = año - 1
+  }
+
+  let mesSiguiente = mes + 1
+  let añoSiguiente = año
+  if (mesSiguiente > 11) {
+    mesSiguiente = 0
+    añoSiguiente = año + 1
+  }
+
+  // Dibujar mini calendario anterior (página izquierda) o siguiente (página derecha)
+  if (lado === 'Izquierda') {
+    drawMiniCalendar(doc, mesAnterior, añoAnterior, margin, 5, 50, 35)
+  } else {
+    drawMiniCalendar(doc, mesSiguiente, añoSiguiente, pageWidth - margin - 50, 5, 50, 35)
+  }
+
   // Título
   doc.setFontSize(30)
   doc.setTextColor(0, 57, 166)
-  doc.text(`${MESES[mes]} ${año}`, pageWidth / 2, 25, { align: 'center' })
+  doc.text(`${MESES[mes]} ${año}`, pageWidth / 2, 42, { align: 'center' })
 
   // Dibujar todas las semanas del mes
-  drawAllWeeks(doc, mes, año, semanas, feriados, margin, 35, contentWidth, lado)
+  drawAllWeeks(doc, mes, año, semanas, feriados, margin, 52, contentWidth, lado)
 }
 
 function drawAllWeeks(doc, mes, año, semanas, feriados, x, y, width, lado) {
@@ -83,7 +105,7 @@ function drawAllWeeks(doc, mes, año, semanas, feriados, x, y, width, lado) {
   }
 
   const cellWidth = width / numColumnas
-  const cellHeight = 45
+  const cellHeight = 36
   const numFilas = semanas.length
 
   // Dibujar encabezados de días
@@ -142,20 +164,72 @@ function drawAllWeeks(doc, mes, año, semanas, feriados, x, y, width, lado) {
         }
 
         // Número del día
-        doc.setFontSize(46)
+        doc.setFontSize(69)
         doc.setFont('helvetica', 'bold')
-        doc.text(dia.toString(), cellX + cellWidth / 2, cellY + 30, { align: 'center' })
+        doc.text(dia.toString(), cellX + cellWidth / 2, cellY + 24, { align: 'center' })
 
         // Nombre del feriado si existe (más pequeño para caber)
         if (feriado) {
           doc.setFontSize(9)
           doc.setFont('helvetica', 'normal')
           const nombreCorto = feriado.nombre.substring(0, 9) + (feriado.nombre.length > 9 ? '...' : '')
-          doc.text(nombreCorto, cellX + cellWidth / 2, cellY + 44, { align: 'center' })
+          doc.text(nombreCorto, cellX + cellWidth / 2, cellY + 35, { align: 'center' })
         }
       }
     }
   })
+}
+
+function drawMiniCalendar(doc, mes, año, x, y, width, height) {
+  // Month name
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(0, 57, 166)
+  doc.text(`${MESES[mes]} ${año}`, x + width / 2, y + 5, { align: 'center' })
+
+  // Calculate days
+  const diasEnMes = new Date(año, mes + 1, 0).getDate()
+  const primerDia = new Date(año, mes, 1).getDay()
+  const inicio = primerDia === 0 ? 6 : primerDia - 1
+  const dias = Array.from({ length: diasEnMes }, (_, i) => i + 1)
+
+  // Grid
+  const cellWidth = width / 7
+  const cellHeight = (height - 8) / 5  // 5 rows for weeks
+  const gridY = y + 8
+
+  // Draw day numbers
+  doc.setFontSize(4)
+  doc.setFont('helvetica', 'normal')
+  doc.setTextColor(0, 0, 0)
+
+  let dayIndex = 0
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 7; col++) {
+      const cellX = x + col * cellWidth
+      const cellY = gridY + row * cellHeight
+      let dayNumber = null
+      if (row === 0 && col < inicio) {
+        // Empty
+      } else if (dayIndex < dias.length) {
+        dayNumber = dias[dayIndex]
+        dayIndex++
+      }
+      if (dayNumber !== null) {
+        doc.text(dayNumber.toString(), cellX + cellWidth / 2, cellY + cellHeight / 2 + 1, { align: 'center' })
+      }
+    }
+  }
+
+  // Optional: draw light grid
+  doc.setDrawColor(200, 200, 200)
+  doc.setLineWidth(0.1)
+  for (let i = 0; i <= 7; i++) {
+    doc.line(x + i * cellWidth, gridY, x + i * cellWidth, gridY + 5 * cellHeight)
+  }
+  for (let i = 0; i <= 5; i++) {
+    doc.line(x, gridY + i * cellHeight, x + width, gridY + i * cellHeight)
+  }
 }
 
 function drawHolidaysPage(doc, mes, año, feriados, margin, contentWidth, pageWidth, pageHeight) {
